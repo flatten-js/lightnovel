@@ -1,4 +1,6 @@
 from . import morpheme
+from . import markov_c
+from typing import List
 
 class Novelizer(object):
     """
@@ -60,6 +62,25 @@ class Novelizer(object):
             print(e)
         else:
             self.model.inspect()
+
+    def novelize(self, n: int = 1) -> List[str]:
+        """
+        Generate novel based on materialized morpheme model
+
+        Parameters
+        ----------
+        n : int, default 1
+            Number of novels to generate
+
+        Returns
+        -------
+        novels : list of str
+            Generated novel list
+        """
+
+        gen = markov_c.Generator(n)
+
+        return gen.generate()
 
 
 class NovelizerError(Exception):
