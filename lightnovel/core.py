@@ -1,6 +1,6 @@
 from . import morpheme
 from . import markov_c
-from typing import List
+from typing import List, TypeVar, Type, Union
 
 class Novelizer(object):
     """
@@ -31,11 +31,14 @@ class Novelizer(object):
         Parameter priority : text < file
         """
 
-        if not text:
-            with open("./asset/" + file, encoding = "utf-8") as f:
-                text = f.read()
-
-        self.model = morpheme.Model(text)
+        try:
+            if not text:
+                with open("./asset/" + file, encoding = "utf-8") as f:
+                    text = f.read()
+        except FileNotFoundError as e:
+            print(NovelizerError(e))
+        else:
+            self.model = morpheme.Model(text)
 
     def build(self) -> None:
         """
@@ -80,7 +83,15 @@ class Novelizer(object):
 
         gen = markov_c.Generator(n)
 
-        return gen.generate()
+        try:
+            result = gen.generate()
+        except FileNotFoundError as e:
+            print(NovelizerError(e))
+        else:
+            return result
+
+
+E = TypeVar("E", bound = Exception)
 
 
 class NovelizerError(Exception):
@@ -90,11 +101,54 @@ class NovelizerError(Exception):
     Attributes
     ----------
     name : str
-        Error name
+        The name of the exception class
+    e : class object or None
+        Exception class object
     """
 
-    def __init__(self) -> None:
-        self.name = self.__class__.__name__
+    def __init__(self, e: Type[Union[E, None]] = None) -> None:
+        """
+        Parameters
+        ----------
+        e : class object or None
+            Exception class object
+        """
+
+        self.name = self
+        self.e = e
+
+    def __str__(self) -> str:
+        """
+        Returns
+        -------
+        err_msg : str
+            An error message containing the error name and its contents
+        """
+
+        self.name = self.e
+        return self.msg(str(self.e))
+
+    @property
+    def name(self) -> str:
+        """
+        Returns
+        -------
+        name : str
+            The name of the exception class
+        """
+
+        return self.__name
+
+    @name.setter
+    def name(self, object) -> None:
+        """
+        Parameters
+        ----------
+        object : class object
+            Exception class object
+        """
+
+        self.__name = object.__class__.__name__
 
     def msg(self, text: str) -> str:
         """
@@ -111,7 +165,7 @@ class NovelizerError(Exception):
             An error message containing the error name and its contents
         """
 
-        return f"{ self.name }: { text }"
+        return f"{ self.name }: <{ text }>"
 
 
 class ModelNotFoundError(NovelizerError):

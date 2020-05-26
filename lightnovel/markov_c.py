@@ -30,8 +30,10 @@ class Generator(object):
             sqlite3 connection object
         """
 
-        if not os.path.exists(morpheme.Model.DB_PATH):
-            raise IOError("No morpheme model DB")
+        path = morpheme.Model.DB_PATH
+
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"No such DB file: '{ path }'")
 
         con = sqlite3.connect(morpheme.Model.DB_PATH)
 
