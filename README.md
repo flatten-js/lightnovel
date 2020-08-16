@@ -42,16 +42,16 @@ Initialization process including instantiation of the novelizer class
 
 ### Novelizer specifications
 
-#### Registration
+#### Register
 Register the text that will be the morpheme model
 ```
->>> novel.register(file, text)
+>>> novel.register(file, *, text)
 
     Parameters
     ----------
     file : str, default "title.txt"
        Register text from text file
-    text : str, default ""
+    text : keyword-only[str], default ""
        Register text directly without going through a text file
 
     Notes
@@ -59,7 +59,7 @@ Register the text that will be the morpheme model
     Parameter priority : text < file
 ```
 
-#### Inspection
+#### Inspect
 Validate the formed morpheme model
 ```
 >>> novel.inspect()
@@ -71,7 +71,7 @@ Materialize morpheme model as DB
 >>> novel.build()
 ```
 
-#### Generation
+#### Novelize
 Generate novel based on materialized morpheme model
 ```
 >>> novel.novelize(n)
